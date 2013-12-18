@@ -3,34 +3,34 @@
 #
 
 ntp_servers:
-  - compute04.dmz-pod2.lab
+  - pool.ntp.org
 
 build_node_name: build-server.domain.name
 domain_name: domain.name
 
 coe::base::controller_hostname: node01
 
-controller_internal_address: 192.168.255.191
-controller_public_address: 192.168.255.191
-controller_admin_address: 192.168.255.191
+controller_internal_address:  10.0.1.11
+controller_public_address:    10.0.1.11 
+controller_admin_address:    10.0.1.11 
 
-swift_internal_address: 192.168.220.60
-swift_public_address: 192.168.220.60
-swift_admin_address: 192.168.220.60
+swift_internal_address:    10.0.1.11 
+swift_public_address:    10.0.1.11 
+swift_admin_address:    10.0.1.11 
 
 # maps to ovs local_ip from the gre data mappings
 internal_ip: "%{ipaddress_eth0}"
 external_interface: eth1
 public_interface: eth1
-private_interface: eth0
+private_interface: eth2
 
 # Swift networking parameters
-swift_storage_interface: eth0.222
+swift_storage_interface: eth2
 swift_storage_netmask: 255.255.255.0
-swift_proxy_net_ip: "%{ipaddress_eth0}"
-swift_local_net_ip: "%{ipaddress_eth0}"
+swift_proxy_net_ip: "%{ipaddress_eth2}"
+swift_local_net_ip: "%{ipaddress_eth2}"
 
-nova::compute::vncserver_proxyclient_address: "%{ipaddress_eth0}"
+nova::compute::vncserver_proxyclient_address: "%{ipaddress_eth2}"
 
 # user data for individual passwords
 cinder_db_password: cinder_pass
@@ -63,40 +63,31 @@ controller_names:
   - node02
   - node03
 openstack-ha::load-balancer::controller_ipaddresses:
-  - 192.168.255.191
-  - 192.168.255.195
-  - 192.168.255.197
+  - 10.0.1.11
+  - 10.0.2.11
 openstack-ha::load-balancer::swift_proxy_names:
   - node01
   - node02
   - node03
 openstack-ha::load-balancer::swift_proxy_ipaddresses:
-  - 192.168.255.191
-  - 192.168.255.195
-  - 192.168.255.197
+  - 10.0.1.11
+  - 10.0.2.11
 nova::memcached_servers:
-  - 192.168.255.191:11211
-  - 192.168.255.195:11211
-  - 192.168.255.197:11211
+  - 10.0.1.11:11211
+  - 10.0.2.11:11211
 openstack::swift::proxy::swift_memcache_servers:
-  - 192.168.255.191:11211
-  - 192.168.255.195:11211
-  - 192.168.255.197:11211
+  - 10.0.1.11:11211
+  - 10.0.2.11:11211
 rabbit_hosts:
   - node01:5672
   - node02:5672
   - node03:5672
-bind_address: "%{ipaddress_eth0}"
+bind_address: "%{ipaddress_eth2}"
 
-cinder::volume::iscsi::iscsi_ip_address: "%{ipaddress_eth0}"
-
-quantum::plugins::ovs::network_vlan_ranges: physnet1:223:225
-neutron::plugins::ovs::network_vlan_ranges: physnet1:223:225
+cinder::volume::iscsi::iscsi_ip_address: "%{ipaddress_eth2}"
 
 openstack::swift::storage-node::storage_type: disk
 openstack::swift::storage-node::storage_devices:
   - 'sdb'
-  - 'sdc'
-  - 'sdd'
-  - 'sde'
-  - 'sdf'
+
+rabbitmq::server::config_mirrored_queues: true
